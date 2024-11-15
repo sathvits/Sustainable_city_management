@@ -76,7 +76,8 @@
     pip install django <br>
 ### Step 2: Create a New Django Project 
  -> Start a new Django project by running: <br>
-    django-admin startproject myproject <br>
+ 
+    django-admin startproject myproject 
     
        myproject/
           manage.py
@@ -86,7 +87,7 @@
              settings.py
              urls.py
              wsgi.py
-             <br>
+             
     This command generates a project directory, myproject, with the following structure:
 
 ### Step 3: Create a Django App
