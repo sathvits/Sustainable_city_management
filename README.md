@@ -1,6 +1,6 @@
 **GROUP 12 Project Documentation**
 
-##Setting up an EC2instance with Nginx and python virtual environment on AWS
+## Setting up an EC2instance with Nginx and python virtual environment on AWS
 
 **Step 1: Launch an EC2 Instance on AWS**
 
