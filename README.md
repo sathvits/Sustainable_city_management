@@ -7,17 +7,17 @@
 **1. Log in to AWS Console:**
  -> Go to AWS Management Console and navigate to EC2 under the Compute section.<br> 
 **2. Create an EC2 Instance:**
- -> Click on Launch Instance.
- -> Choose an Ubuntu Amazon Machine Image (AMI) for a default Ubuntu Linux environment.
- -> Choose an instance type (t2.micro is eligible for free-tier usage).
- -> Click Next: Configure Instance Details to configure network or IAM roles (default settings are usually fine).
+ -> Click on Launch Instance.<br>
+ -> Choose an Ubuntu Amazon Machine Image (AMI) for a default Ubuntu Linux environment.<br>
+ -> Choose an instance type (t2.micro is eligible for free-tier usage).<br>
+ -> Click Next: Configure Instance Details to configure network or IAM roles (default settings are usually fine).<br>
 **3. Configure Key Pair:**
- -> In the Key Pair section, select an existing key pair or create a new one.
- -> If creating a new key pair, download the .pem file and save it securely.
+ -> In the Key Pair section, select an existing key pair or create a new one.<br>
+ -> If creating a new key pair, download the .pem file and save it securely.<br>
 **4. Configure Security Group:**
- -> Allow SSH access (TCP, port 22) to the instance.
- -> Optionally, allow HTTP (port 80) and HTTPS (port 443) for web access.
- -> To allow SSH from your IP only (more secure), use your IP range (e.g., your-ip-address/32).
+ -> Allow SSH access (TCP, port 22) to the instance.<br>
+ -> Optionally, allow HTTP (port 80) and HTTPS (port 443) for web access.<br>
+ -> To allow SSH from your IP only (more secure), use your IP range (e.g., your-ip-address/32).<br>
 
 ### Step 2: Set Up SSH Permissions on Your Ubuntu Machine
 
