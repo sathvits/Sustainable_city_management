@@ -2,7 +2,7 @@
 
 ## Setting up an EC2instance with Nginx and python virtual environment on AWS
 
-**Step 1: Launch an EC2 Instance on AWS**
+### Step 1: Launch an EC2 Instance on AWS
 
 **1. Log in to AWS Console:**
  -> Go to AWS Management Console and navigate to EC2 under the Compute section.
@@ -19,7 +19,7 @@
  -> Optionally, allow HTTP (port 80) and HTTPS (port 443) for web access.
  -> To allow SSH from your IP only (more secure), use your IP range (e.g., your-ip-address/32).
 
-**Step 2: Set Up SSH Permissions on Your Ubuntu Machine**
+### Step 2: Set Up SSH Permissions on Your Ubuntu Machine
 
 **1. Move the Key to a Secure Directory:**
  -> Move the downloaded .pem key file to the ~/.ssh/ directory.
@@ -32,7 +32,7 @@
     ubuntu@ec2-3-90-235-226.compute-1.amazonaws.com
  
 
-**Step 3: Install Web Server (Nginx for Ubuntu)**
+### Step 3: Install Web Server (Nginx for Ubuntu)
 
 **1. Update the System:**
  -> Ensure that your system is up to date.
@@ -54,7 +54,7 @@
  -> Open a browser and go to http://<EC2-public-IPv4-address>.
  -> You should see the Nginx default page if everything is configured correctly.
 
-**Step 4: Install dependencies and setup virtual environments**
+### Step 4: Install dependencies and setup virtual environments
 
 **1. Install Dependencies:**
  -> Install Python, pip, and other necessary packages.
@@ -69,12 +69,12 @@
     virtualenv myprojectenv
     source myprojectenv/bin/activate
 -------------------------------------------------------------------------------------------------------
-**Setting Up a Django Framework with a Template**
+## Setting Up a Django Framework with a Template
 
-**Step 1: Install Django**
+### Step 1: Install Django
  -> Ensure Django is installed on your system. Use the following command:
     pip install django
-**Step 2: Create a New Django Project**
+### Step 2: Create a New Django Project
  -> Start a new Django project by running:
     django-admin startproject myproject
     
@@ -89,50 +89,45 @@
              
     This command generates a project directory, myproject, with the following structure:
 
-**Step 3: Create a Django App**
-
+### Step 3: Create a Django App
 
  -> Navigate to the project directory and create a new app:
     cd myproject
     python manage.py startapp myapp
     This creates an myapp folder for your application's core logic:
 
+### Step 4: Configure the App
+ -> Add the app to the project by editing myproject/settings.py:
 
-**Step 4: Configure the App**
-Add the app to the project by editing myproject/settings.py:
-
-
-
-Step 5: Set Up the Templates Directory
-Create a Templates Folder: Inside myapp, create a folder named templates:
-bash
-mkdir myapp/templates
-Configure Templates in Settings: Update myproject/settings.py in the TEMPLATES section:
+### Step 5: Set Up the Templates Directory
+ -> Create a Templates Folder: Inside myapp, create a folder named templates:
+    bash
+    mkdir myapp/templates
+    Configure Templates in Settings: Update myproject/settings.py in the TEMPLATES section:
 
 
-Step 6: Create a Basic Template
-Inside the myapp/templates folder, create a file named index.html.
-Add the following sample content:
+### Step 6: Create a Basic Template
+ -> Inside the myapp/templates folder, create a file named index.html.
+    Add the following sample content:
 
 
-Step 7: Set Up a View
-Define a view to render the template. Edit myapp/views.py:
-Step 
-8: Map the View to a URL
-Create a URL Configuration for the App: In myapp/urls.py, add:
+### Step 7: Set Up a View
+ -> Define a view to render the template. Edit myapp/views.py:
+ 
+### Step 8: Map the View to a URL
+ -> Create a URL Configuration for the App: In myapp/urls.py, add:
+    Include the App’s URLs in the Project: Edit myproject/urls.py:
 
-Include the App’s URLs in the Project: Edit myproject/urls.py:
-
-Step 9: Run the Server
-Start the Django development server:
-python manage.py runserver
+### Step 9: Run the Server
+ -> Start the Django development server:
+    python manage.py runserver
 
 
 
 
-Step 10: Verify the Setup
- Run Django's development server to make sure everything works.
-python manage.py runserver 0.0.0.0:8000
- Open a browser and navigate to http://<EC2-public-IP>:8000 to check if the Django welcome page is displayed.
+### Step 10: Verify the Setup
+ -> Run Django's development server to make sure everything works.
+    python manage.py runserver 0.0.0.0:8000
+    Open a browser and navigate to http://<EC2-public-IP>:8000 to check if the Django welcome page is displayed.
 
 
