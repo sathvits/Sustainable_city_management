@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-mds3zx3e!%d8lvg7)t+4u5$+s(-5dr##@22ve88wx^as&+n!t$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['44.212.56.138']
+ALLOWED_HOSTS = ['3.90.235.226']
 # ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # Your app
     'accounts',
+    'django_prometheus',
 ]
 
 MIDDLEWARE = [
@@ -78,11 +79,17 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'SCM',
+        'CLIENT': {
+            'host': 'mongodb+srv://sashaikh:<your_password>@ubuntuscm.at5il.mongodb.net/?retryWrites=true&w=majority',
+            'username': 'sashaikh',
+	    'password': 'TCD@123',
+	    'authSource': 'admin',
+	    'authMechanism': 'SCRAM-SHA-1',
+	}
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
