@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Manager Dashboard</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Basic Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header, footer {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #dashboard {
+            flex: 1;
+            background: #f4f4f4;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel {
+            background-color: #fff;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+        .save-button {
+            margin-top: 1rem;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .save-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="header-item">
+            <h2>City Manager Dashboard</h2>
+        </div>
+        <div class="header-item">
+            <span id="date-time"></span>
+        </div>
+        <div class="header-item">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard">
+        <!-- Public Transport Status -->
+        <section id="transport-status" class="panel">
+            <h3>Public Transport Status</h3>
+            <p>Select a transport service, and then choose a specific route or station to display it on the map.</p>
+
+            <!-- Dropdown to select transport service -->
+            <select id="transport-select" class="transport-option">
+                <option value="none">Select Transport Service</option>
+                <option value="bus">Bus</option>
+                <option value="luas">LUAS</option>
+                <option value="dart">DART</option>
+                <option value="bike">Bike Stations</option>
+            </select>
+
+            <!-- Dropdown to select specific route or station (hidden initially) -->
+            <select id="route-select" class="transport-option" style="display: none;">
+                <option value="none">Select Route</option>
+            </select>
+
+            <!-- Dublin Map for Transport Services -->
+            <div id="map"></div>
+            <!-- Button to Save Changes -->
+            <button id="save-changes-btn" class="save-button" disabled>Save Changes</button>
+        </section>
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <div>System Health Indicator: <span id="system-health">Good</span></div>
+        <div><a href="#support" style="color: white;">Contact Support</a></div>
+    </footer>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Update the Date and Time in the header
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById("date-time").textContent = now.toLocaleString();
+        }
+        setInterval(updateDateTime, 1000);
+
+        // Logout function
+        function logout() {
+            window.location.href = "index.html"; // Redirect back to login page
+        }
+
+        // Initialize Map
+        var map = L.map('map').setView([53.3498, -6.2603], 13); // Center on Dublin
+
+        // Add OpenStreetMap Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Layers to keep track of map elements
+        let startMarker = null;
+        let endMarker = null;
+        let currentPolyline = null;
+
+        // Clear all map elements
+        function clearMap() {
+            if (startMarker) {
+                map.removeLayer(startMarker);
+                startMarker = null;
+            }
+            if (endMarker) {
+                map.removeLayer(endMarker);
+                endMarker = null;
+            }
+            if (currentPolyline) {
+                map.removeLayer(currentPolyline);
+                currentPolyline = null;
+            }
+        }
+
+        // Update route line dynamically
+        function updateRoute() {
+            if (startMarker && endMarker) {
+                const startCoords = startMarker.getLatLng();
+                const endCoords = endMarker.getLatLng();
+                if (currentPolyline) {
+                    map.removeLayer(currentPolyline);
+                }
+                currentPolyline = L.polyline([startCoords, endCoords], { color: 'blue', weight: 4 }).addTo(map);
+                map.fitBounds(currentPolyline.getBounds());
+            }
+        }
+
+        // Sample route data for buses, LUAS, DART, and bike stations
+        const routesData = {
+            bus: {
+                "Bus 1": [[53.3498, -6.2603], [53.346, -6.255]],
+                "Bus 2": [[53.347, -6.260], [53.343, -6.257]]
+            },
+            luas: {
+                "Green Line": [[53.347, -6.270], [53.343, -6.256]],
+                "Red Line": [[53.348, -6.260], [53.342, -6.257]]
+            },
+            dart: {
+                "DART North": [[53.353, -6.250], [53.342, -6.230]],
+                "DART South": [[53.349, -6.260], [53.344, -6.259]]
+            },
+            bike: {
+                "Bike Station 1": [[53.349, -6.260], [53.345, -6.255]]
+            }
+        };
+
+        // Update route dropdown based on selected transport service
+        document.getElementById("transport-select").addEventListener("change", function () {
+            clearMap(); // Clear existing map elements
+
+            const transportService = this.value;
+            const routeSelect = document.getElementById("route-select");
+            const saveButton = document.getElementById("save-changes-btn");
+
+            if (transportService === "none") {
+                routeSelect.style.display = "none";
+                routeSelect.innerHTML = "<option value='none'>Select Route</option>";
+                saveButton.disabled = true;
+            } else {
+                routeSelect.style.display = "inline-block";
+                routeSelect.innerHTML = "<option value='none'>Select Route</option>"; // Reset routes
+
+                // Populate the route options based on the selected transport service
+                Object.keys(routesData[transportService]).forEach(route => {
+                    const option = document.createElement("option");
+                    option.value = route;
+                    option.textContent = route;
+                    routeSelect.appendChild(option);
+                });
+
+                saveButton.disabled = false; // Enable save button after selecting transport service
+            }
+        });
+
+        // Handle route selection and display corresponding markers and line
+        document.getElementById("route-select").addEventListener("change", function () {
+            clearMap(); // Clear existing map elements
+
+            const transportService = document.getElementById("transport-select").value;
+            const selectedRoute = this.value;
+
+            if (selectedRoute !== "none") {
+                const routeCoordinates = routesData[transportService][selectedRoute];
+
+                // Create draggable start and end markers
+                startMarker = L.marker(routeCoordinates[0], { draggable: true }).addTo(map)
+                    .bindPopup('Start Point')
+                    .on('drag', updateRoute);
+
+                endMarker = L.marker(routeCoordinates[1], { draggable: true }).addTo(map)
+                    .bindPopup('End Point')
+                    .on('drag', updateRoute);
+
+                // Add polyline between the points
+                updateRoute(); // Initially draw the route
+            }
+        });
+
+        // Save changes function
+        document.getElementById("save-changes-btn").addEventListener("click", function () {
+            const selectedTransport = document.getElementById("transport-select").value;
+            const selectedRoute = document.getElementById("route-select").value;
+
+            if (selectedTransport !== "none" && selectedRoute !== "none") {
+                alert(`Changes saved for ${selectedTransport} - ${selectedRoute}`);
+            } else {
+                alert("Please select a valid transport service and route.");
+            }
+        });
+    </script>
+</body>
+</html>

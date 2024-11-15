@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Manager Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header, footer {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #dashboard {
+            flex: 1;
+            background: #f4f4f4;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel {
+            background-color: #fff;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>City Manager Dashboard</h2>
+        <span id="date-time"></span>
+    </header>
+
+    <div id="dashboard">
+        <div id="transport-status" class="panel">
+            <h3>Public Transport Status</h3>
+            <select id="transport-select">
+                <option value="none">Select Transport Service</option>
+                <option value="bus">Bus</option>
+                <option value="luas">LUAS</option>
+                <option value="dart">DART</option>
+            </select>
+            <select id="route-select" style="display: none;">
+                <option value="none">Select Route</option>
+            </select>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div>System Health Indicator: <span id="system-health">Good</span></div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([53.3498, -6.2603], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let startMarker = null;
+        let endMarker = null;
+        let routeLine = null;
+
+        const routesData = {
+            bus: {
+                "Bus 1": [[53.3498, -6.2603], [53.346, -6.255]],
+                "Bus 2": [[53.347, -6.260], [53.343, -6.257]]
+            },
+            luas: {
+                "Green Line": [[53.347, -6.270], [53.343, -6.256]],
+                "Red Line": [[53.348, -6.260], [53.342, -6.257]]
+            },
+            dart: {
+                "DART North": [[53.353, -6.250], [53.342, -6.230]],
+                "DART South": [[53.349, -6.260], [53.344, -6.259]]
+            }
+        };
+
+        // Clear map elements
+        function clearMap() {
+            if (startMarker) {
+                map.removeLayer(startMarker);
+                startMarker = null;
+            }
+            if (endMarker) {
+                map.removeLayer(endMarker);
+                endMarker = null;
+            }
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+        }
+
+        // Update route line based on draggable markers
+        function updateRoute() {
+            if (startMarker && endMarker) {
+                const startCoords = startMarker.getLatLng();
+                const endCoords = endMarker.getLatLng();
+                if (routeLine) {
+                    map.removeLayer(routeLine);
+                }
+                routeLine = L.polyline([startCoords, endCoords], { color: 'blue', weight: 4 }).addTo(map);
+                map.fitBounds(routeLine.getBounds());
+            }
+        }
+
+        // Handle transport service selection
+        document.getElementById("transport-select").addEventListener("change", function () {
+            clearMap();
+
+            const transportService = this.value;
+            const routeSelect = document.getElementById("route-select");
+
+            if (transportService === "none") {
+                routeSelect.style.display = "none";
+                routeSelect.innerHTML = "<option value='none'>Select Route</option>";
+            } else {
+                routeSelect.style.display = "block";
+                routeSelect.innerHTML = "<option value='none'>Select Route</option>";
+                Object.keys(routesData[transportService]).forEach(route => {
+                    const option = document.createElement("option");
+                    option.value = route;
+                    option.textContent = route;
+                    routeSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Handle route selection
+        document.getElementById("route-select").addEventListener("change", function () {
+            clearMap();
+
+            const transportService = document.getElementById("transport-select").value;
+            const selectedRoute = this.value;
+
+            if (selectedRoute !== "none") {
+                const routeCoordinates = routesData[transportService][selectedRoute];
+
+                // Add draggable markers for start and end points
+                startMarker = L.marker(routeCoordinates[0], { draggable: true }).addTo(map)
+                    .bindPopup("Start Point")
+                    .openPopup();
+
+                endMarker = L.marker(routeCoordinates[1], { draggable: true }).addTo(map)
+                    .bindPopup("End Point")
+                    .openPopup();
+
+                // Draw initial route
+                routeLine = L.polyline(routeCoordinates, { color: 'blue', weight: 4 }).addTo(map);
+                map.fitBounds(routeLine.getBounds());
+
+                // Update route on marker drag
+                startMarker.on('drag', updateRoute);
+                endMarker.on('drag', updateRoute);
+            }
+        });
+    </script>
+</body>
+</html>
