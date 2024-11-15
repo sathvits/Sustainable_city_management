@@ -1,4 +1,4 @@
-#GROUP 12 Project Documentation**
+# GROUP 12 Project Documentation
 
 ## Setting up an EC2instance with Nginx and python virtual environment on AWS
 
