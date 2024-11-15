@@ -5,7 +5,7 @@
 ### Step 1: Launch an EC2 Instance on AWS
 
 **1. Log in to AWS Console:**
- -> Go to AWS Management Console and navigate to EC2 under the Compute section.
+ -> Go to AWS Management Console and navigate to EC2 under the Compute section.<br> 
 **2. Create an EC2 Instance:**
  -> Click on Launch Instance.
  -> Choose an Ubuntu Amazon Machine Image (AMI) for a default Ubuntu Linux environment.
